@@ -381,4 +381,5 @@ app.MapGet("/categories", () =>
     return CategoryList;
 });
 
+
 app.Run();
