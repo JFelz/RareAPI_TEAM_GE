@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using TEAMGE_API.Models;
 
 List<Comment> CommentList = new List<Comment>()
@@ -385,6 +386,12 @@ app.MapGet("/posts/{PostId}/comments", (int PostId) =>
 {
     List<Comment> PostCommentsList = CommentList.Where(c => c.PostId == PostId).ToList();
     return PostCommentsList;
+});
+
+app.MapGet("/tags", () =>
+{
+    List<Tag> alphabetizedTagList = TagList.OrderBy(tag => tag.Label).ToList();
+    return alphabetizedTagList;
 });
 
 app.Run();
