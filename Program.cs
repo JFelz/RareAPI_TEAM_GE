@@ -346,4 +346,13 @@ app.MapGet("/users/{Id}", (int Id) =>
     return Results.Ok(user);
 });
 
+app.MapGet("/usersubscriedposts", () =>
+{
+    var userSubscriedPosts = users
+    .Where(post => post.Id == null)
+    .OrderByDescending(user => user.Id)
+    .ThenBy(SubcriptionsList => SubcriptionsList.Id);
+    return Results.Ok(userSubscriedPosts);
+});
+
 app.Run();
