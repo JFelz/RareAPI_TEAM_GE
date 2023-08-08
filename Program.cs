@@ -437,6 +437,16 @@ app.MapGet("/posts/{PostId}/comments", (int PostId) =>
     return PostCommentsList;
 });
 
+
+app.MapGet("/usersubscriedposts", () =>
+{
+    var userSubscriedPosts = users
+    .Where(post => post.Id == null)
+    .OrderByDescending(user => user.Id)
+    .ThenBy(SubcriptionsList => SubcriptionsList.Id);
+    return Results.Ok(userSubscriedPosts);
+});
+
 app.MapGet("/tags", () =>
 {
     List<Tag> alphabetizedTagList = TagList.OrderBy(tag => tag.Label).ToList();
@@ -450,6 +460,7 @@ app.MapPost("/tags", (Tag newTag) =>
     newTag.Id = TagList.Count() + 1;
     TagList.Add(newTag);
     return Results.Ok(newTag);
+
 });
 
 app.Run();
