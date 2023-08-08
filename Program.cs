@@ -1,4 +1,5 @@
 using TEAMGE_API.Models;
+using System.Linq;
 
 
 List<Comment> CommentList = new List<Comment>()
@@ -138,37 +139,37 @@ List<Post> PostList = new List<Post>
      },
 };
 
-List<Subcriptions> SubcriptionsList = new List<Subcriptions>
+List<Subscriptions> SubcriptionsList = new List<Subscriptions>
 {
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 1,
         FollowerId = 1,
         AuthorId = 1,
         CreatedOn = new DateTime(2009, 10, 31),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 2,
         FollowerId = 2,
         AuthorId = 2,
         CreatedOn = new DateTime(2017, 1, 28),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 3,
         FollowerId = 3,
         AuthorId = 3,
         CreatedOn = new DateTime(2022, 11, 11),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 4,
         FollowerId = 4,
         AuthorId = 4,
         CreatedOn = new DateTime(2011, 2, 20),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 5,
         FollowerId = 5,
@@ -301,6 +302,48 @@ List<PostReactions> PostReactionsList = new List<PostReactions>()
         PostId = 1,
     },
 };
+
+app.MapGet("/post", () =>
+{
+    return PostList;
+});
+
+
+app.MapGet("/post/{id}", (int id) =>
+{
+    Post post = PostList.FirstOrDefault(e => e.Id == id);
+    if (post == null)
+    {
+        return Results.NotFound();
+    }
+    List <Post> ListOfPost = PostList.Where(st => st.Id == id).ToList();
+    return Results.Ok(post);
+});
+
+
+app.MapDelete("/post/{id}", (int id) =>
+{
+    PostList.Remove(PostList.FirstOrDefault(post => post.Id == id));
+});
+
+/*app.MapPost("/post", (Post post) =>
+{
+    // creates a new id (When we get to it later, our SQL database will do this for us like JSON Server did!)
+    PostList.Id = PostList.Max(st => st.Id) + 1;
+    PostList.Add(post);
+    return Postlist;
+});*/
+
+app.MapPost("/post", (Post post) =>
+{
+    // Create a new ID (This logic is simplified and might not be suitable for a production scenario)
+    int newId = PostList.Max(p => p.Id) + 1;
+    post.Id = newId;
+
+    PostList.Add(post);
+    return post; // Return the added post with the new ID
+});
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
