@@ -181,7 +181,7 @@ List<User> users = new()
 {
  new User()
  {
-     Id = 1,
+    Id = 1,
     FirstName = "John",
     LastName = "Doe",
     Email = "john@example.com",
@@ -429,6 +429,7 @@ app.MapPost("/categories", (Category category) =>
     category.Id = CategoryList.Max(cat => cat.Id) + 1;
     CategoryList.Add(category);
     return CategoryList;
+});
 
 app.MapGet("/posts/{PostId}/comments", (int PostId) =>
 {
@@ -442,6 +443,28 @@ app.MapGet("/tags", () =>
     List<Tag> alphabetizedTagList = TagList.OrderBy(tag => tag.Label).ToList();
     return alphabetizedTagList;
 
+});
+
+app.MapPut("/posts/{id}", (int id, Post newPost) =>
+{
+    Post postToUpdate= PostList.FirstOrDefault(post => post.Id == id);
+    int postIndex = PostList.IndexOf(postToUpdate);
+    if (postToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    //the id in the request route doesn't match the id from the ticket in the request body. That's a bad request!
+    if (id != newPost.Id)
+    {
+        return Results.BadRequest();
+    }
+    PostList[postIndex] = newPost;
+    return Results.Ok();
+});
+
+app.MapGet("/posts", () =>
+{
+    return PostList;
 });
 
 app.Run();
