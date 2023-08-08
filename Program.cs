@@ -429,12 +429,12 @@ app.MapPost("/categories", (Category category) =>
     category.Id = CategoryList.Max(cat => cat.Id) + 1;
     CategoryList.Add(category);
     return CategoryList;
+});
 
 app.MapGet("/posts/{PostId}/comments", (int PostId) =>
 {
     List<Comment> PostCommentsList = CommentList.Where(c => c.PostId == PostId).ToList();
     return PostCommentsList;
-
 });
 
 app.MapGet("/tags", () =>
@@ -442,6 +442,14 @@ app.MapGet("/tags", () =>
     List<Tag> alphabetizedTagList = TagList.OrderBy(tag => tag.Label).ToList();
     return alphabetizedTagList;
 
+});
+
+app.MapPost("/tags", (Tag newTag) =>
+{
+    // Look at each Id in a Tag, and grab the highest one
+    newTag.Id = TagList.Count() + 1;
+    TagList.Add(newTag);
+    return Results.Ok(newTag);
 });
 
 app.Run();
