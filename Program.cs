@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Hosting;
 using TEAMGE_API.Models;
 
 List<Comment> CommentList = new List<Comment>()
@@ -74,9 +75,6 @@ List<Category> CategoryList = new List<Category>()
         Label = "UI/UX",
     },
 };
-
-
-var builder = WebApplication.CreateBuilder(args);
 
 List<Post> PostList = new List<Post>
 {
@@ -181,6 +179,7 @@ List<User> users = new()
 {
  new User()
  {
+     Id = 1,
     FirstName = "John",
     LastName = "Doe",
     Email = "john@example.com",
@@ -191,6 +190,7 @@ List<User> users = new()
  },
  new User()
  {
+     Id = 2,
     FirstName = "Jane",
     LastName = "Smith",
     Email = "jane@example.com",
@@ -201,6 +201,7 @@ List<User> users = new()
  },
  new User()
  {
+     Id = 3,
     FirstName = "Michael",
     LastName = "Johnson",
     Email = "michael@example.com",
@@ -211,6 +212,7 @@ List<User> users = new()
  },
  new User()
  {
+     Id = 4,
     FirstName = "Emily",
     LastName = "Brown",
     Email = "emily@example.com",
@@ -221,6 +223,7 @@ List<User> users = new()
  },
  new User()
  {
+     Id = 5,
     FirstName = "David",
     LastName = "Wilson",
     Email = "david@example.com",
@@ -357,6 +360,8 @@ List<PostTag> PostTagList = new List<PostTag>
     },
 };
 
+var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -376,6 +381,29 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet("/users", () =>
+{
+    var usersAlphabetical = users.OrderBy(user => user.UserName).ToList();
+    return usersAlphabetical;
+});
+
+app.MapGet("/posts/{UserId}", (int UserId) =>
+{
+    List<Post> userPosts = PostList.Where(post => post.UserId == UserId).ToList();
+    return userPosts;
+});
+
+app.MapGet("/users/{Id}", (int Id) =>
+{
+    User user = users.FirstOrDefault(u => u.Id == Id);
+
+    if (user == null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(user);
 
 //Get all Categories
 app.MapGet("/categories", () =>
