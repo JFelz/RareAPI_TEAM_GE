@@ -1,6 +1,5 @@
 using TEAMGE_API.Models;
 
-
 List<Comment> CommentList = new List<Comment>()
 {
     new Comment()
@@ -76,9 +75,6 @@ List<Category> CategoryList = new List<Category>()
     },
 };
 
-
-var builder = WebApplication.CreateBuilder(args);
-
 List<Post> PostList = new List<Post>
 {
     new Post()
@@ -138,37 +134,37 @@ List<Post> PostList = new List<Post>
      },
 };
 
-List<Subcriptions> SubcriptionsList = new List<Subcriptions>
+List<Subscriptions> SubcriptionsList = new List<Subscriptions>
 {
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 1,
         FollowerId = 1,
         AuthorId = 1,
         CreatedOn = new DateTime(2009, 10, 31),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 2,
         FollowerId = 2,
         AuthorId = 2,
         CreatedOn = new DateTime(2017, 1, 28),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 3,
         FollowerId = 3,
         AuthorId = 3,
         CreatedOn = new DateTime(2022, 11, 11),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 4,
         FollowerId = 4,
         AuthorId = 4,
         CreatedOn = new DateTime(2011, 2, 20),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 5,
         FollowerId = 5,
@@ -177,7 +173,6 @@ List<Subcriptions> SubcriptionsList = new List<Subcriptions>
     },
 };
 
-// Add services to the container.
 List<User> users = new()
 {
  new User()
@@ -357,6 +352,8 @@ List<PostTag> PostTagList = new List<PostTag>
         PostId = 5,
     },
 };
+
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
