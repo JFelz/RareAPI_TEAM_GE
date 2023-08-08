@@ -404,6 +404,7 @@ app.MapGet("/users/{Id}", (int Id) =>
     }
 
     return Results.Ok(user);
+});
 
 //Get all Categories
 app.MapGet("/categories", () =>
