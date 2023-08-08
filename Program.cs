@@ -375,4 +375,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+//Get all Categories
+app.MapGet("/categories", () =>
+{
+    return CategoryList;
+});
+
 app.Run();
