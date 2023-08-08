@@ -362,6 +362,42 @@ List<PostTag> PostTagList = new List<PostTag>
     },
 };
 
+app.MapGet("/post", () =>
+{
+    return PostList;
+});
+
+
+app.MapGet("/post/{id}", (int id) =>
+{
+    Post post = PostList.FirstOrDefault(e => e.Id == id);
+    if (post == null)
+    {
+        return Results.NotFound();
+    }
+    List <Post> ListOfPost = PostList.Where(st => st.Id == id).ToList();
+    return Results.Ok(post);
+});
+
+
+app.MapDelete("/post/{id}", (int id) =>
+{
+    PostList.Remove(PostList.FirstOrDefault(post => post.Id == id));
+});
+
+
+app.MapPost("/post", (Post post) =>
+{
+    // Create a new ID (This logic is simplified and might not be suitable for a production scenario)
+    int newId = PostList.Max(p => p.Id) + 1;
+    post.Id = newId;
+
+    PostList.Add(post);
+    return post; // Return the added post with the new ID
+});
+
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -370,6 +406,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -435,7 +472,16 @@ app.MapGet("/posts/{PostId}/comments", (int PostId) =>
 {
     List<Comment> PostCommentsList = CommentList.Where(c => c.PostId == PostId).ToList();
     return PostCommentsList;
+});
 
+
+app.MapGet("/usersubscriedposts", () =>
+{
+    var userSubscriedPosts = users
+    .Where(post => post.Id == null)
+    .OrderByDescending(user => user.Id)
+    .ThenBy(SubcriptionsList => SubcriptionsList.Id);
+    return Results.Ok(userSubscriedPosts);
 });
 
 app.MapGet("/tags", () =>
@@ -444,6 +490,7 @@ app.MapGet("/tags", () =>
     return alphabetizedTagList;
 
 });
+
 
 app.MapPut("/posts/{id}", (int id, Post newPost) =>
 {
@@ -467,4 +514,15 @@ app.MapGet("/posts", () =>
     return PostList;
 });
 
+
+app.MapPost("/tags", (Tag newTag) =>
+{
+    // Look at each Id in a Tag, and grab the highest one
+    newTag.Id = TagList.Count() + 1;
+    TagList.Add(newTag);
+    return Results.Ok(newTag);
+
+});
+
 app.Run();
+
