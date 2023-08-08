@@ -1,6 +1,7 @@
 using TEAMGE_API.Models;
 using System.Linq;
 
+
 List<Comment> CommentList = new List<Comment>()
 {
     new Comment()
@@ -14,7 +15,7 @@ List<Comment> CommentList = new List<Comment>()
     {
         Id = 2,
         AuthorId = 2,
-        PostId = 3,
+        PostId = 2,
         Content = "OpenAI has a new competitor.. Let's see who can make the best AI."
     },
     new Comment()
@@ -255,6 +256,7 @@ List<Reactions> reactionList = new List<Reactions>()
         Emoji = "U+1F621", // Angry Face
     },
 };
+
 List<PostReactions> PostReactionsList = new List<PostReactions>()
 {
     new PostReactions
@@ -294,6 +296,69 @@ List<PostReactions> PostReactionsList = new List<PostReactions>()
     },
 };
 
+List<Tag> TagList = new List<Tag>
+{
+    new Tag()
+    {
+        Id = 1,
+        Label = "Cute",
+    },
+    new Tag()
+    {
+        Id = 2,
+        Label = "LOL",
+    },
+    new Tag()
+    {
+        Id = 3,
+        Label = "Cats",
+    },
+    new Tag()
+    {
+        Id = 4,
+        Label = "Wow",
+    },
+    new Tag()
+    {
+        Id = 5,
+        Label = "Oof",
+    },
+};
+
+List<PostTag> PostTagList = new List<PostTag>
+{
+    new PostTag()
+    {
+        Id = 1,
+        TagId = 1,
+        PostId = 1,
+    },
+    new PostTag()
+    {
+        Id = 2,
+        TagId = 2,
+        PostId = 1,
+    },
+    new PostTag()
+    {
+        Id = 3,
+        TagId = 3,
+        PostId = 2,
+    },
+    new PostTag()
+    {
+        Id = 4,
+        TagId = 4,
+        PostId = 3,
+    },
+    new PostTag()
+    {
+        Id = 5,
+        TagId = 5,
+        PostId = 5,
+    },
+};
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -320,11 +385,18 @@ app.MapGet("/categories", () =>
     return CategoryList;
 });
 
+
 //Get Posts by Category
 app.MapGet("/posts/{CategoryId}", (int CategoryId) =>
 {
     List<Post> postByCat = PostList.Where(pl => pl.CategoryId == CategoryId).ToList();
     return postByCat;
+
+app.MapGet("/posts/{PostId}/comments", (int PostId) =>
+{
+    List<Comment> PostCommentsList = CommentList.Where(c => c.PostId == PostId).ToList();
+    return PostCommentsList;
+
 });
 
 app.Run();
