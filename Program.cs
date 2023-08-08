@@ -463,4 +463,22 @@ app.MapPost("/tags", (Tag newTag) =>
 
 });
 
+app.MapDelete("/posts/tags/{postTagId}", (int postTagId) =>
+{
+    PostTag postTag = PostTagList.FirstOrDefault(postTag => postTag.Id == postTagId);
+    PostTagList.Remove(postTag);
+});
+
+app.MapPost("/posts/{postId}/tags", (PostTag postTag, int postId, int tagId) =>
+{
+    postTag.Id = PostTagList.Count() + 1;
+    postTag.PostId = postId;
+    postTag.TagId = tagId;
+});
+
+app.MapGet("/posts/tags/{postTagId}", (int postTagId) =>
+{
+    List<Post> posts = PostList.Where(post => post.TagId)
+});
+
 app.Run();
