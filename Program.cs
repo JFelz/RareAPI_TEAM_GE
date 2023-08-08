@@ -1,6 +1,5 @@
 using TEAMGE_API.Models;
 
-
 List<Comment> CommentList = new List<Comment>()
 {
     new Comment()
@@ -14,7 +13,7 @@ List<Comment> CommentList = new List<Comment>()
     {
         Id = 2,
         AuthorId = 2,
-        PostId = 3,
+        PostId = 2,
         Content = "OpenAI has a new competitor.. Let's see who can make the best AI."
     },
     new Comment()
@@ -382,6 +381,12 @@ app.MapControllers();
 app.MapGet("/categories", () =>
 {
     return CategoryList;
+});
+
+app.MapGet("/posts/{PostId}/comments", (int PostId) =>
+{
+    List<Comment> PostCommentsList = CommentList.Where(c => c.PostId == PostId).ToList();
+    return PostCommentsList;
 });
 
 app.Run();
