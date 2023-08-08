@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 using TEAMGE_API.Models;
 
@@ -178,6 +179,7 @@ List<User> users = new()
 {
  new User()
  {
+     Id = 1,
     FirstName = "John",
     LastName = "Doe",
     Email = "john@example.com",
@@ -188,6 +190,7 @@ List<User> users = new()
  },
  new User()
  {
+     Id = 2,
     FirstName = "Jane",
     LastName = "Smith",
     Email = "jane@example.com",
@@ -198,6 +201,7 @@ List<User> users = new()
  },
  new User()
  {
+     Id = 3,
     FirstName = "Michael",
     LastName = "Johnson",
     Email = "michael@example.com",
@@ -208,6 +212,7 @@ List<User> users = new()
  },
  new User()
  {
+     Id = 4,
     FirstName = "Emily",
     LastName = "Brown",
     Email = "emily@example.com",
@@ -218,6 +223,7 @@ List<User> users = new()
  },
  new User()
  {
+     Id = 5,
     FirstName = "David",
     LastName = "Wilson",
     Email = "david@example.com",
@@ -375,6 +381,29 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet("/users", () =>
+{
+    var usersAlphabetical = users.OrderBy(user => user.UserName).ToList();
+    return usersAlphabetical;
+});
+
+app.MapGet("/posts/{UserId}", (int UserId) =>
+{
+    List<Post> userPosts = PostList.Where(post => post.UserId == UserId).ToList();
+    return userPosts;
+});
+
+app.MapGet("/users/{Id}", (int Id) =>
+{
+    User user = users.FirstOrDefault(u => u.Id == Id);
+
+    if (user == null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(user);
 
 //Get all Categories
 app.MapGet("/categories", () =>
