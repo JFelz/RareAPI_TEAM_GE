@@ -422,6 +422,14 @@ app.MapGet("/posts/{CategoryId}", (int CategoryId) =>
     return postByCat;
 });
 
+
+//Post New Category
+app.MapPost("/categories", (Category category) =>
+{
+    category.Id = CategoryList.Max(cat => cat.Id) + 1;
+    CategoryList.Add(category);
+    return CategoryList;
+
 app.MapGet("/posts/{PostId}/comments", (int PostId) =>
 {
     List<Comment> PostCommentsList = CommentList.Where(c => c.PostId == PostId).ToList();
@@ -433,6 +441,7 @@ app.MapGet("/tags", () =>
 {
     List<Tag> alphabetizedTagList = TagList.OrderBy(tag => tag.Label).ToList();
     return alphabetizedTagList;
+
 });
 
 app.MapPost("/tags", (Tag newTag) =>
