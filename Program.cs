@@ -435,4 +435,12 @@ app.MapGet("/tags", () =>
     return alphabetizedTagList;
 });
 
+app.MapPost("/tags", (Tag newTag) =>
+{
+    // Look at each Id in a Tag, and grab the highest one
+    newTag.Id = TagList.Count() + 1;
+    TagList.Add(newTag);
+    return Results.Ok(newTag);
+});
+
 app.Run();
