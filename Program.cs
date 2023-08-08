@@ -14,7 +14,7 @@ List<Comment> CommentList = new List<Comment>()
     {
         Id = 2,
         AuthorId = 2,
-        PostId = 3,
+        PostId = 2,
         Content = "OpenAI has a new competitor.. Let's see who can make the best AI."
     },
     new Comment()
@@ -138,37 +138,37 @@ List<Post> PostList = new List<Post>
      },
 };
 
-List<Subcriptions> SubcriptionsList = new List<Subcriptions>
+List<Subscriptions> SubcriptionsList = new List<Subscriptions>
 {
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 1,
         FollowerId = 1,
         AuthorId = 1,
         CreatedOn = new DateTime(2009, 10, 31),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 2,
         FollowerId = 2,
         AuthorId = 2,
         CreatedOn = new DateTime(2017, 1, 28),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 3,
         FollowerId = 3,
         AuthorId = 3,
         CreatedOn = new DateTime(2022, 11, 11),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 4,
         FollowerId = 4,
         AuthorId = 4,
         CreatedOn = new DateTime(2011, 2, 20),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 5,
         FollowerId = 5,
@@ -301,6 +301,13 @@ List<PostReactions> PostReactionsList = new List<PostReactions>()
         PostId = 1,
     },
 };
+
+
+app.MapGet("/posts/{PostId}/comments", (int PostId) =>
+{
+    List<Comment> PostCommentsList = CommentList.Where(c => c.PostId == PostId).ToList();
+    return PostCommentsList;
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
