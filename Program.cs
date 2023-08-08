@@ -327,4 +327,12 @@ app.MapGet("/posts/{CategoryId}", (int CategoryId) =>
     return postByCat;
 });
 
+//Post New Category
+app.MapPost("/categories", (Category category) =>
+{
+    category.Id = CategoryList.Max(cat => cat.Id) + 1;
+    CategoryList.Add(category);
+    return CategoryList;
+});
+
 app.Run();
