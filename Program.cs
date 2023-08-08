@@ -255,6 +255,7 @@ List<Reactions> reactionList = new List<Reactions>()
         Emoji = "U+1F621", // Angry Face
     },
 };
+
 List<PostReactions> PostReactionsList = new List<PostReactions>()
 {
     new PostReactions
@@ -291,6 +292,69 @@ List<PostReactions> PostReactionsList = new List<PostReactions>()
         ReactionId = 1,
         UserId = 5,
         PostId = 1,
+    },
+};
+
+List<Tag> TagList = new List<Tag>
+{
+    new Tag()
+    {
+        Id = 1,
+        Label = "Cute",
+    },
+    new Tag()
+    {
+        Id = 2,
+        Label = "LOL",
+    },
+    new Tag()
+    {
+        Id = 3,
+        Label = "Cats",
+    },
+    new Tag()
+    {
+        Id = 4,
+        Label = "Wow",
+    },
+    new Tag()
+    {
+        Id = 5,
+        Label = "Oof",
+    },
+};
+
+List<PostTag> PostTagList = new List<PostTag>
+{
+    new PostTag()
+    {
+        Id = 1,
+        TagId = 1,
+        PostId = 1,
+    },
+    new PostTag()
+    {
+        Id = 2,
+        TagId = 2,
+        PostId = 1,
+    },
+    new PostTag()
+    {
+        Id = 3,
+        TagId = 3,
+        PostId = 2,
+    },
+    new PostTag()
+    {
+        Id = 4,
+        TagId = 4,
+        PostId = 3,
+    },
+    new PostTag()
+    {
+        Id = 5,
+        TagId = 5,
+        PostId = 5,
     },
 };
 
