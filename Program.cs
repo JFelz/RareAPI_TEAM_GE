@@ -138,37 +138,37 @@ List<Post> PostList = new List<Post>
      },
 };
 
-List<Subcriptions> SubcriptionsList = new List<Subcriptions>
+List<Subscriptions> SubcriptionsList = new List<Subscriptions>
 {
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 1,
         FollowerId = 1,
         AuthorId = 1,
         CreatedOn = new DateTime(2009, 10, 31),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 2,
         FollowerId = 2,
         AuthorId = 2,
         CreatedOn = new DateTime(2017, 1, 28),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 3,
         FollowerId = 3,
         AuthorId = 3,
         CreatedOn = new DateTime(2022, 11, 11),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 4,
         FollowerId = 4,
         AuthorId = 4,
         CreatedOn = new DateTime(2011, 2, 20),
     },
-    new Subcriptions()
+    new Subscriptions()
     {
         Id = 5,
         FollowerId = 5,
@@ -232,14 +232,6 @@ List<User> users = new()
  }
  };
 
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
 List<Reactions> reactionList = new List<Reactions>()
 {
     new Reactions
@@ -302,6 +294,13 @@ List<PostReactions> PostReactionsList = new List<PostReactions>()
     },
 };
 
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -314,5 +313,11 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//Get all Categories
+app.MapGet("/categories", () =>
+{
+    return CategoryList;
+});
 
 app.Run();
