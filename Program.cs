@@ -1,5 +1,8 @@
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using TEAMGE_API.Models;
 using System.Linq;
+
 
 List<Comment> CommentList = new List<Comment>()
 {
@@ -14,7 +17,7 @@ List<Comment> CommentList = new List<Comment>()
     {
         Id = 2,
         AuthorId = 2,
-        PostId = 3,
+        PostId = 2,
         Content = "OpenAI has a new competitor.. Let's see who can make the best AI."
     },
     new Comment()
@@ -75,9 +78,6 @@ List<Category> CategoryList = new List<Category>()
         Label = "UI/UX",
     },
 };
-
-
-var builder = WebApplication.CreateBuilder(args);
 
 List<Post> PostList = new List<Post>
 {
@@ -177,11 +177,11 @@ List<Subscriptions> SubcriptionsList = new List<Subscriptions>
     },
 };
 
-// Add services to the container.
 List<User> users = new()
 {
  new User()
  {
+     Id = 1,
     FirstName = "John",
     LastName = "Doe",
     Email = "john@example.com",
@@ -192,6 +192,7 @@ List<User> users = new()
  },
  new User()
  {
+     Id = 2,
     FirstName = "Jane",
     LastName = "Smith",
     Email = "jane@example.com",
@@ -202,6 +203,7 @@ List<User> users = new()
  },
  new User()
  {
+     Id = 3,
     FirstName = "Michael",
     LastName = "Johnson",
     Email = "michael@example.com",
@@ -212,6 +214,7 @@ List<User> users = new()
  },
  new User()
  {
+     Id = 4,
     FirstName = "Emily",
     LastName = "Brown",
     Email = "emily@example.com",
@@ -222,6 +225,7 @@ List<User> users = new()
  },
  new User()
  {
+     Id = 5,
     FirstName = "David",
     LastName = "Wilson",
     Email = "david@example.com",
@@ -255,6 +259,7 @@ List<Reactions> reactionList = new List<Reactions>()
         Emoji = "U+1F621", // Angry Face
     },
 };
+
 List<PostReactions> PostReactionsList = new List<PostReactions>()
 {
     new PostReactions
@@ -294,6 +299,71 @@ List<PostReactions> PostReactionsList = new List<PostReactions>()
     },
 };
 
+List<Tag> TagList = new List<Tag>
+{
+    new Tag()
+    {
+        Id = 1,
+        Label = "Cute",
+    },
+    new Tag()
+    {
+        Id = 2,
+        Label = "LOL",
+    },
+    new Tag()
+    {
+        Id = 3,
+        Label = "Cats",
+    },
+    new Tag()
+    {
+        Id = 4,
+        Label = "Wow",
+    },
+    new Tag()
+    {
+        Id = 5,
+        Label = "Oof",
+    },
+};
+
+List<PostTag> PostTagList = new List<PostTag>
+{
+    new PostTag()
+    {
+        Id = 1,
+        TagId = 1,
+        PostId = 1,
+    },
+    new PostTag()
+    {
+        Id = 2,
+        TagId = 2,
+        PostId = 1,
+    },
+    new PostTag()
+    {
+        Id = 3,
+        TagId = 3,
+        PostId = 2,
+    },
+    new PostTag()
+    {
+        Id = 4,
+        TagId = 4,
+        PostId = 3,
+    },
+    new PostTag()
+    {
+        Id = 5,
+        TagId = 5,
+        PostId = 5,
+    },
+};
+
+var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -314,11 +384,36 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapGet("/users", () =>
+{
+    var usersAlphabetical = users.OrderBy(user => user.UserName).ToList();
+    return usersAlphabetical;
+});
+
+app.MapGet("/posts/{UserId}", (int UserId) =>
+{
+    List<Post> userPosts = PostList.Where(post => post.UserId == UserId).ToList();
+    return userPosts;
+});
+
+app.MapGet("/users/{Id}", (int Id) =>
+{
+    User user = users.FirstOrDefault(u => u.Id == Id);
+
+    if (user == null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(user);
+});
+
 //Get all Categories
 app.MapGet("/categories", () =>
 {
     return CategoryList;
 });
+
 
 //Get Posts by Category
 app.MapGet("/posts/{CategoryId}", (int CategoryId) =>
@@ -327,12 +422,26 @@ app.MapGet("/posts/{CategoryId}", (int CategoryId) =>
     return postByCat;
 });
 
+
 //Post New Category
 app.MapPost("/categories", (Category category) =>
 {
     category.Id = CategoryList.Max(cat => cat.Id) + 1;
     CategoryList.Add(category);
     return CategoryList;
+
+app.MapGet("/posts/{PostId}/comments", (int PostId) =>
+{
+    List<Comment> PostCommentsList = CommentList.Where(c => c.PostId == PostId).ToList();
+    return PostCommentsList;
+
+});
+
+app.MapGet("/tags", () =>
+{
+    List<Tag> alphabetizedTagList = TagList.OrderBy(tag => tag.Label).ToList();
+    return alphabetizedTagList;
+
 });
 
 app.Run();
