@@ -420,6 +420,7 @@ app.MapGet("/posts/{CategoryId}", (int CategoryId) =>
 {
     List<Post> postByCat = PostList.Where(pl => pl.CategoryId == CategoryId).ToList();
     return postByCat;
+});
 
 app.MapGet("/posts/{PostId}/comments", (int PostId) =>
 {
