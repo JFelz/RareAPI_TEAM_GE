@@ -22,4 +22,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapGet("/test", () =>
+{
+    return "this is a test branch";
+});
+
 app.Run();
