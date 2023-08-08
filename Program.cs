@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using TEAMGE_API.Models;
 using System.Linq;
 
@@ -176,7 +177,6 @@ List<Subscriptions> SubcriptionsList = new List<Subscriptions>
     },
 };
 
-// Add services to the container.
 List<User> users = new()
 {
  new User()
@@ -406,6 +406,7 @@ app.MapGet("/users/{Id}", (int Id) =>
     }
 
     return Results.Ok(user);
+});
 
 //Get all Categories
 app.MapGet("/categories", () =>
@@ -419,12 +420,19 @@ app.MapGet("/posts/{CategoryId}", (int CategoryId) =>
 {
     List<Post> postByCat = PostList.Where(pl => pl.CategoryId == CategoryId).ToList();
     return postByCat;
+});
 
 app.MapGet("/posts/{PostId}/comments", (int PostId) =>
 {
     List<Comment> PostCommentsList = CommentList.Where(c => c.PostId == PostId).ToList();
     return PostCommentsList;
 
+});
+
+app.MapGet("/tags", () =>
+{
+    List<Tag> alphabetizedTagList = TagList.OrderBy(tag => tag.Label).ToList();
+    return alphabetizedTagList;
 });
 
 app.Run();
