@@ -181,7 +181,7 @@ List<User> users = new()
 {
  new User()
  {
-     Id = 1,
+    Id = 1,
     FirstName = "John",
     LastName = "Doe",
     Email = "john@example.com",
@@ -345,13 +345,13 @@ List<PostTag> PostTagList = new List<PostTag>
     new PostTag()
     {
         Id = 3,
-        TagId = 3,
+        TagId = 1,
         PostId = 2,
     },
     new PostTag()
     {
         Id = 4,
-        TagId = 4,
+        TagId = 1,
         PostId = 3,
     },
     new PostTag()
@@ -404,7 +404,6 @@ app.MapPost("/post", (Post post) =>
     PostList.Add(post);
     return post; // Return the added post with the new ID
 });
-
 
 
 
@@ -493,14 +492,39 @@ app.MapGet("/tags", () =>
 
 });
 
+
+app.MapPut("/posts/{id}", (int id, Post newPost) =>
+{
+    Post postToUpdate= PostList.FirstOrDefault(post => post.Id == id);
+    int postIndex = PostList.IndexOf(postToUpdate);
+    if (postToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    //the id in the request route doesn't match the id from the ticket in the request body. That's a bad request!
+    if (id != newPost.Id)
+    {
+        return Results.BadRequest();
+    }
+    PostList[postIndex] = newPost;
+    return Results.Ok();
+});
+
+app.MapGet("/posts", () =>
+{
+    return PostList;
+});
+
+
 app.MapPost("/tags", (Tag newTag) =>
 {
     // Look at each Id in a Tag, and grab the highest one
-    newTag.Id = TagList.Count() + 1;
+    newTag.Id = TagList.Max(tag => tag.Id) + 1;
     TagList.Add(newTag);
     return Results.Ok(newTag);
 
 });
+
 
 app.MapPost("/postReaction/{postId}/{reactionId}/{userId}", (int postId, int reactionId, int userId) =>
 {
@@ -524,6 +548,40 @@ app.MapPost("/postReaction/{postId}/{reactionId}/{userId}", (int postId, int rea
     PostReactionsList.Add(postReaction);
 
     return Results.Created($"/postReaction/{postId}/{reactionId}", postReaction);
+
+app.MapDelete("/posts/tags/{postTagId}", (int postTagId) =>
+{
+    PostTag postTag = PostTagList.FirstOrDefault(postTag => postTag.Id == postTagId);
+    PostTagList.Remove(postTag);
+});
+
+app.MapPost("/postsTags", (int postId, int tagId) =>
+{
+    PostTag postTag = new PostTag
+  {
+    Id = PostTagList.Max(postTag => postTag.Id) + 1,
+    PostId = postId,
+    TagId = tagId,
+  };
+    PostTagList.Add(postTag);
+    return Results.Ok(postTag);
+});
+
+app.MapGet("/posts/tags/{tagId}", (int tagId) =>
+{
+    List<PostTag> targetPostTags = PostTagList.Where(postTag => postTag.TagId == tagId).ToList();
+    List<PostTag> nonDuplicatedPostTags = targetPostTags.DistinctBy(postTag => postTag.PostId).ToList();
+    List<Post> targetPostList = new List<Post>();
+
+    foreach (PostTag postTag in nonDuplicatedPostTags)
+    {
+        Post post = PostList.FirstOrDefault(post => post.Id == postTag.PostId);
+        targetPostList.Add(post);
+    }
+
+    return Results.Ok(targetPostList);
+
 });
 
 app.Run();
+
