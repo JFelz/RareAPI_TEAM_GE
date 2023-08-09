@@ -493,11 +493,16 @@ app.MapDelete("/posts/tags/{postTagId}", (int postTagId) =>
     PostTagList.Remove(postTag);
 });
 
-app.MapPost("/posts/{postId}/tags", (PostTag postTag, int postId, int tagId) =>
+app.MapPost("/postsTags", (int postId, int tagId) =>
 {
-    postTag.Id = PostTagList.Max(postTag => postTag.Id) + 1;
-    postTag.PostId = postId;
-    postTag.TagId = tagId;
+    PostTag postTag = new PostTag
+  {
+    Id = PostTagList.Max(postTag => postTag.Id) + 1,
+    PostId = postId,
+    TagId = tagId,
+  };
+    PostTagList.Add(postTag);
+    return Results.Ok(postTag);
 });
 
 app.MapGet("/posts/tags/{tagId}", (int tagId) =>
@@ -512,7 +517,7 @@ app.MapGet("/posts/tags/{tagId}", (int tagId) =>
         targetPostList.Add(post);
     }
 
-    return targetPostList;
+    return Results.Ok(targetPostList);
 });
 
 app.Run();
