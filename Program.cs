@@ -362,6 +362,15 @@ List<PostTag> PostTagList = new List<PostTag>
     },
 };
 
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
 app.MapGet("/post", () =>
 {
     return PostList;
@@ -398,14 +407,7 @@ app.MapPost("/post", (Post post) =>
 
 
 
-var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
@@ -498,6 +500,30 @@ app.MapPost("/tags", (Tag newTag) =>
     TagList.Add(newTag);
     return Results.Ok(newTag);
 
+});
+
+app.MapPost("/postReaction/{postId}/{reactionId}/{userId}", (int postId, int reactionId, int userId) =>
+{
+    // Checks to see if the post with the given postId exists
+    var post = PostList.FirstOrDefault(p => p.Id == postId);
+    if (post == null)
+    {
+        return Results.NotFound("Post not found");
+    }
+
+    // This is where we create a new PostReaction entry
+    var postReaction = new PostReactions
+    {
+        Id = PostReactionsList.Count() + 1,
+        PostId = postId,
+        ReactionId = reactionId,
+        UserId = userId
+    };
+
+    // This is where we add the reaction to the PostReaction table
+    PostReactionsList.Add(postReaction);
+
+    return Results.Created($"/postReaction/{postId}/{reactionId}", postReaction);
 });
 
 app.Run();
