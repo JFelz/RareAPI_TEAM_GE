@@ -416,7 +416,7 @@ app.MapGet("/categories", () =>
 
 
 //Get Posts by Category
-app.MapGet("/posts/{CategoryId}", (int CategoryId) =>
+app.MapGet("/posts/categories/{CategoryId}", (int CategoryId) =>
 {
     List<Post> postByCat = PostList.Where(pl => pl.CategoryId == CategoryId).ToList();
     return postByCat;
