@@ -345,13 +345,13 @@ List<PostTag> PostTagList = new List<PostTag>
     new PostTag()
     {
         Id = 3,
-        TagId = 3,
+        TagId = 1,
         PostId = 2,
     },
     new PostTag()
     {
         Id = 4,
-        TagId = 4,
+        TagId = 1,
         PostId = 3,
     },
     new PostTag()
@@ -406,6 +406,7 @@ app.MapPost("/post", (Post post) =>
 });
 
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -451,7 +452,7 @@ app.MapGet("/categories", () =>
 
 
 //Get Posts by Category
-app.MapGet("/posts/Category/{CategoryId}", (int CategoryId) =>
+app.MapGet("/posts/categories/{CategoryId}", (int CategoryId) =>
 {
     List<Post> postByCat = PostList.Where(pl => pl.CategoryId == CategoryId).ToList();
     return postByCat;
@@ -516,7 +517,7 @@ app.MapGet("/posts", () =>
 app.MapPost("/tags", (Tag newTag) =>
 {
     // Look at each Id in a Tag, and grab the highest one
-    newTag.Id = TagList.Count() + 1;
+    newTag.Id = TagList.Max(tag => tag.Id) + 1;
     TagList.Add(newTag);
     return Results.Ok(newTag);
 
@@ -530,6 +531,64 @@ app.MapDelete("/reaction/{id}", (int id) =>
 app.MapGet("/reaction", () =>
 {
     return reactionList;
+});
+
+app.MapPost("/postReaction/{postId}/{reactionId}/{userId}", (int postId, int reactionId, int userId) =>
+{
+    // Checks to see if the post with the given postId exists
+    var post = PostList.FirstOrDefault(p => p.Id == postId);
+    if (post == null)
+    {
+        return Results.NotFound("Post not found");
+    }
+
+    // This is where we create a new PostReaction entry
+    var postReaction = new PostReactions
+    {
+        Id = PostReactionsList.Count() + 1,
+        PostId = postId,
+        ReactionId = reactionId,
+        UserId = userId
+    };
+
+    // This is where we add the reaction to the PostReaction table
+    PostReactionsList.Add(postReaction);
+
+    return Results.Created($"/postReaction/{postId}/{reactionId}", postReaction);
+});
+
+app.MapDelete("/posts/tags/{postTagId}", (int postTagId) =>
+{
+    PostTag postTag = PostTagList.FirstOrDefault(postTag => postTag.Id == postTagId);
+    PostTagList.Remove(postTag);
+});
+
+app.MapPost("/postsTags", (int postId, int tagId) =>
+{
+    PostTag postTag = new PostTag
+  {
+    Id = PostTagList.Max(postTag => postTag.Id) + 1,
+    PostId = postId,
+    TagId = tagId,
+  };
+    PostTagList.Add(postTag);
+    return Results.Ok(postTag);
+});
+
+app.MapGet("/posts/tags/{tagId}", (int tagId) =>
+{
+    List<PostTag> targetPostTags = PostTagList.Where(postTag => postTag.TagId == tagId).ToList();
+    List<PostTag> nonDuplicatedPostTags = targetPostTags.DistinctBy(postTag => postTag.PostId).ToList();
+    List<Post> targetPostList = new List<Post>();
+
+    foreach (PostTag postTag in nonDuplicatedPostTags)
+    {
+        Post post = PostList.FirstOrDefault(post => post.Id == postTag.PostId);
+        targetPostList.Add(post);
+    }
+
+    return Results.Ok(targetPostList);
+
 });
 
 app.Run();
