@@ -2,6 +2,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 using TEAMGE_API.Models;
 using System.Linq;
+using System.Numerics;
 
 
 List<Comment> CommentList = new List<Comment>()
@@ -138,7 +139,7 @@ List<Post> PostList = new List<Post>
      },
 };
 
-List<Subscriptions> SubcriptionsList = new List<Subscriptions>
+List<Subscriptions> SubscriptionsList = new List<Subscriptions>
 {
     new Subscriptions()
     {
@@ -362,6 +363,14 @@ List<PostTag> PostTagList = new List<PostTag>
     },
 };
 
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
 app.MapGet("/post", () =>
 {
     return PostList;
@@ -395,17 +404,6 @@ app.MapPost("/post", (Post post) =>
     PostList.Add(post);
     return post; // Return the added post with the new ID
 });
-
-
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
@@ -483,6 +481,25 @@ app.MapGet("/usersubscriedposts", () =>
     .ThenBy(SubcriptionsList => SubcriptionsList.Id);
     return Results.Ok(userSubscriedPosts);
 });
+
+app.MapPost("/subscriptions", (Subscriptions subscription) =>
+{
+    subscription.Id = SubscriptionsList.Max(subscription=> subscription.Id) + 1;
+    SubscriptionsList.Add(subscription);
+    return subscription;
+});
+app.MapDelete("/subscriptions/{id}", (int id) =>
+{
+    Subscriptions subscription = SubscriptionsList.FirstOrDefault(sub => sub.Id == id);
+    if (subscription == null)
+    {
+        return Results.NotFound();
+    }
+    SubscriptionsList.Remove(subscription);
+
+    return Results.Ok($"Subscription with ID {id} has been deleted.");
+});
+
 
 app.MapGet("/tags", () =>
 {
