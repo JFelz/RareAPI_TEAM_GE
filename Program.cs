@@ -138,7 +138,7 @@ List<Post> PostList = new List<Post>
      },
 };
 
-List<Subscriptions> SubcriptionsList = new List<Subscriptions>
+List<Subscriptions> SubscriptionsList = new List<Subscriptions>
 {
     new Subscriptions()
     {
@@ -362,6 +362,15 @@ List<PostTag> PostTagList = new List<PostTag>
     },
 };
 
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
 app.MapGet("/post", () =>
 {
     return PostList;
@@ -395,17 +404,6 @@ app.MapPost("/post", (Post post) =>
     PostList.Add(post);
     return post; // Return the added post with the new ID
 });
-
-
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
@@ -453,7 +451,7 @@ app.MapGet("/categories", () =>
 
 
 //Get Posts by Category
-app.MapGet("/posts/{CategoryId}", (int CategoryId) =>
+app.MapGet("/posts/Category/{CategoryId}", (int CategoryId) =>
 {
     List<Post> postByCat = PostList.Where(pl => pl.CategoryId == CategoryId).ToList();
     return postByCat;
@@ -522,6 +520,16 @@ app.MapPost("/tags", (Tag newTag) =>
     TagList.Add(newTag);
     return Results.Ok(newTag);
 
+});
+
+app.MapDelete("/reaction/{id}", (int id) =>
+{
+    reactionList.Remove(reactionList.FirstOrDefault(reaction => reaction.Id == id));
+});
+
+app.MapGet("/reaction", () =>
+{
+    return reactionList;
 });
 
 app.Run();
