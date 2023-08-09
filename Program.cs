@@ -371,6 +371,44 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.MapGet("/post", () =>
+{
+    return PostList;
+});
+
+
+app.MapGet("/post/{id}", (int id) =>
+{
+    Post post = PostList.FirstOrDefault(e => e.Id == id);
+    if (post == null)
+    {
+        return Results.NotFound();
+    }
+    List <Post> ListOfPost = PostList.Where(st => st.Id == id).ToList();
+    return Results.Ok(post);
+});
+
+
+app.MapDelete("/post/{id}", (int id) =>
+{
+    PostList.Remove(PostList.FirstOrDefault(post => post.Id == id));
+});
+
+
+app.MapPost("/post", (Post post) =>
+{
+    // Create a new ID (This logic is simplified and might not be suitable for a production scenario)
+    int newId = PostList.Max(p => p.Id) + 1;
+    post.Id = newId;
+
+    PostList.Add(post);
+    return post; // Return the added post with the new ID
+});
+
+
+
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -487,6 +525,30 @@ app.MapPost("/tags", (Tag newTag) =>
 
 });
 
+
+app.MapPost("/postReaction/{postId}/{reactionId}/{userId}", (int postId, int reactionId, int userId) =>
+{
+    // Checks to see if the post with the given postId exists
+    var post = PostList.FirstOrDefault(p => p.Id == postId);
+    if (post == null)
+    {
+        return Results.NotFound("Post not found");
+    }
+
+    // This is where we create a new PostReaction entry
+    var postReaction = new PostReactions
+    {
+        Id = PostReactionsList.Count() + 1,
+        PostId = postId,
+        ReactionId = reactionId,
+        UserId = userId
+    };
+
+    // This is where we add the reaction to the PostReaction table
+    PostReactionsList.Add(postReaction);
+
+    return Results.Created($"/postReaction/{postId}/{reactionId}", postReaction);
+
 app.MapDelete("/posts/tags/{postTagId}", (int postTagId) =>
 {
     PostTag postTag = PostTagList.FirstOrDefault(postTag => postTag.Id == postTagId);
@@ -518,6 +580,7 @@ app.MapGet("/posts/tags/{tagId}", (int tagId) =>
     }
 
     return Results.Ok(targetPostList);
+
 });
 
 app.Run();
