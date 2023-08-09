@@ -138,7 +138,7 @@ List<Post> PostList = new List<Post>
      },
 };
 
-List<Subscriptions> SubcriptionsList = new List<Subscriptions>
+List<Subscriptions> SubscriptionsList = new List<Subscriptions>
 {
     new Subscriptions()
     {
@@ -407,8 +407,6 @@ app.MapPost("/post", (Post post) =>
 
 
 
-
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -525,6 +523,15 @@ app.MapPost("/tags", (Tag newTag) =>
 
 });
 
+app.MapDelete("/reaction/{id}", (int id) =>
+{
+    reactionList.Remove(reactionList.FirstOrDefault(reaction => reaction.Id == id));
+});
+
+app.MapGet("/reaction", () =>
+{
+    return reactionList;
+});
 
 app.MapPost("/postReaction/{postId}/{reactionId}/{userId}", (int postId, int reactionId, int userId) =>
 {
@@ -548,6 +555,7 @@ app.MapPost("/postReaction/{postId}/{reactionId}/{userId}", (int postId, int rea
     PostReactionsList.Add(postReaction);
 
     return Results.Created($"/postReaction/{postId}/{reactionId}", postReaction);
+});
 
 app.MapDelete("/posts/tags/{postTagId}", (int postTagId) =>
 {
