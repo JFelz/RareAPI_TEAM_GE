@@ -107,7 +107,7 @@ List<Post> PostList = new List<Post>
      new Post()
     {
         Id = 3,
-        UserId = 3,
+        UserId = 1,
         CategoryId = 1,
         Title = " Oppenheimer ",
         PublicationDate = new DateTime(2023,7,21),
@@ -118,7 +118,7 @@ List<Post> PostList = new List<Post>
      new Post()
     {
         Id = 4,
-        UserId = 4,
+        UserId = 1,
         CategoryId = 4,
         Title = " Avengers",
         PublicationDate = new DateTime(1963,9,5),
@@ -152,7 +152,7 @@ List<Subscriptions> SubscriptionsList = new List<Subscriptions>
     {
         Id = 2,
         FollowerId = 2,
-        AuthorId = 2,
+        AuthorId = 1,
         CreatedOn = new DateTime(2017, 1, 28),
     },
     new Subscriptions()
@@ -473,13 +473,18 @@ app.MapGet("/posts/{PostId}/comments", (int PostId) =>
 });
 
 
-app.MapGet("/usersubscriedposts", () =>
+app.MapGet("/usersubscriedposts/{Id}", (int Id) =>
 {
-    var userSubscriedPosts = users
-    .Where(post => post.Id == null)
-    .OrderByDescending(user => user.Id)
-    .ThenBy(SubcriptionsList => SubcriptionsList.Id);
-    return Results.Ok(userSubscriedPosts);
+    var UserSubscriptions = SubscriptionsList.Where(sub => sub.FollowerId == Id).ToList();
+
+    List<Post> subscribedposts = new List<Post>();
+
+    foreach (var subscriptions in UserSubscriptions)
+    {
+        List<Post> post = PostList.Where(Pl => subscriptions.AuthorId == Pl.UserId).ToList();
+        subscribedposts.AddRange(post);
+    }
+    return subscribedposts;
 });
 
 app.MapPost("/subscriptions", (Subscriptions subscription) =>
@@ -516,5 +521,7 @@ app.MapPost("/tags", (Tag newTag) =>
     return Results.Ok(newTag);
 
 });
+
+
 
 app.Run();
