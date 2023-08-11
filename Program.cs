@@ -43,7 +43,7 @@ List<Comment> CommentList = new List<Comment>()
     },
     new Comment()
     {
-        Id = 5,
+        Id = 6,
         AuthorId = 4,
         PostId = 5,
         Content = "LOL OpenAI is better without Elon."
@@ -469,7 +469,32 @@ app.MapPost("/posts/{postId}/newcomment", (int postId, string content, int userI
 
 });
 
+//Update a Comment
+app.MapPut("/comment/{comId}", (int comId, int postId, string content, int userId) =>
+{
+    Comment CommentTarget = CommentList.FirstOrDefault(comment => comment.Id == comId);
+    int CommentIndex = CommentList.IndexOf(CommentTarget);
+    if(CommentTarget == null)
+    {
+        return Results.NotFound();
+    }
 
+    Comment UpdatedComment = new Comment
+    {
+        Id = comId,
+        PostId = postId,
+        Content = content,
+        UserId = userId
+    };
+
+    if (comId != UpdatedComment.Id)
+    {
+        return Results.BadRequest();
+    }
+
+    CommentList[CommentIndex] = UpdatedComment;
+    return Results.Ok();
+});
 
 //Get all Categories
 app.MapGet("/categories", () =>
