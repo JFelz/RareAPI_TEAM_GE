@@ -496,6 +496,14 @@ app.MapPut("/comment/{comId}", (int comId, int postId, string content, int userI
     return Results.Ok();
 });
 
+//DeleteComment
+app.MapDelete("/comment/{id}/remove", (int id) =>
+{
+    Comment TargetComment = CommentList.FirstOrDefault(c => c.Id == id);
+    CommentList.Remove(TargetComment); 
+    return Results.Ok();
+});
+
 //Get all Categories
 app.MapGet("/categories", () =>
 {
