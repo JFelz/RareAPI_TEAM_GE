@@ -444,6 +444,33 @@ app.MapGet("/users/{Id}", (int Id) =>
     return Results.Ok(user);
 });
 
+//Add new comment to Post
+app.MapPost("/posts/{postId}/newcomment", (int postId, string content, int userId ) =>
+{
+    var PostExists = PostList.FirstOrDefault(p => p.Id == postId);
+    if (PostExists == null)
+    {
+        return Results.NotFound();
+    }
+
+    Comment NewComment = new Comment
+    {
+        Id = CommentList.Count + 1,
+        PostId = postId,
+        Content = content,
+        UserId = userId
+    };
+
+    if (postId == NewComment.PostId)
+    {
+        CommentList.Add(NewComment);
+        return Results.Ok("Comment has been added successfully!");
+    } return Results.BadRequest();
+
+});
+
+
+
 //Get all Categories
 app.MapGet("/categories", () =>
 {
@@ -467,6 +494,7 @@ app.MapPost("/categories", (Category category) =>
     return CategoryList;
 });
 
+//Get Post Comments
 app.MapGet("/posts/{PostId}/comments", (int PostId) =>
 {
     List<Comment> PostCommentsList = CommentList.Where(c => c.PostId == PostId).ToList();
