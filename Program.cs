@@ -668,8 +668,8 @@ app.MapGet("/posts/tags/{tagId}", (int tagId) =>
 
     foreach (PostTag postTag in nonDuplicatedPostTags)
     {
-        Post post = PostList.FirstOrDefault(post => post.Id == postTag.PostId);
-        targetPostList.Add(post);
+        List<Post> posts = PostList.Where(post => post.Id == postTag.PostId).ToList();
+        targetPostList.AddRange(posts);
     }
 
     return Results.Ok(targetPostList);
