@@ -44,7 +44,7 @@ List<Comment> CommentList = new List<Comment>()
     },
     new Comment()
     {
-        Id = 5,
+        Id = 6,
         AuthorId = 4,
         PostId = 5,
         Content = "LOL OpenAI is better without Elon."
@@ -444,6 +444,66 @@ app.MapGet("/users/{Id}", (int Id) =>
     return Results.Ok(user);
 });
 
+//Add new comment to Post
+app.MapPost("/posts/{postId}/newcomment", (int postId, string content, int userId ) =>
+{
+    var PostExists = PostList.FirstOrDefault(p => p.Id == postId);
+    if (PostExists == null)
+    {
+        return Results.NotFound();
+    }
+
+    Comment NewComment = new Comment
+    {
+        Id = CommentList.Count + 1,
+        PostId = postId,
+        Content = content,
+        UserId = userId
+    };
+
+    if (postId == NewComment.PostId)
+    {
+        CommentList.Add(NewComment);
+        return Results.Ok("Comment has been added successfully!");
+    } return Results.BadRequest();
+
+});
+
+//Update a Comment
+app.MapPut("/comment/{comId}", (int comId, int postId, string content, int userId) =>
+{
+    Comment CommentTarget = CommentList.FirstOrDefault(comment => comment.Id == comId);
+    int CommentIndex = CommentList.IndexOf(CommentTarget);
+    if(CommentTarget == null)
+    {
+        return Results.NotFound();
+    }
+
+    Comment UpdatedComment = new Comment
+    {
+        Id = comId,
+        PostId = postId,
+        Content = content,
+        UserId = userId
+    };
+
+    if (comId != UpdatedComment.Id)
+    {
+        return Results.BadRequest();
+    }
+
+    CommentList[CommentIndex] = UpdatedComment;
+    return Results.Ok();
+});
+
+//DeleteComment
+app.MapDelete("/comment/{id}/remove", (int id) =>
+{
+    Comment TargetComment = CommentList.FirstOrDefault(c => c.Id == id);
+    CommentList.Remove(TargetComment); 
+    return Results.Ok();
+});
+
 //Get all Categories
 app.MapGet("/categories", () =>
 {
@@ -467,6 +527,7 @@ app.MapPost("/categories", (Category category) =>
     return CategoryList;
 });
 
+//Get Post Comments
 app.MapGet("/posts/{PostId}/comments", (int PostId) =>
 {
     List<Comment> PostCommentsList = CommentList.Where(c => c.PostId == PostId).ToList();
